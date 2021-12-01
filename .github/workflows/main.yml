@@ -1,15 +1,44 @@
 name: CI on Xamarin Android Project
 on: push
 jobs:
-  build:
+  build-Android:
     runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2.4.0
         
+      - name: Restore Nuget packages 
+        run: nuget restore
+        
       - name: Android
         run:  |
-          nuget restore
           cd AwesomeXamarinApp
           cd AwesomeXamarinApp.Android
-          msbuild AwesomeXamarinApp.Android.csproj /verbosity:normal /t:Rebuild /p:Configuration=Debug 
+          msbuild AwesomeXamarinApp.Android.csproj /verbosity:normal /t:Rebuild /t:PackageForAndroid /t:SignAndroidPackage /p:Configuration=Debug 
+
+      - name: Obtain Android APK file
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Xamarin Awesome App
+          path: AwesomeXamarinApp/AwesomeXamarinApp.Android/bin/Debug/com.companyname.awesomexamarinapp-Signed.apk
+
+  build-iOS_Simulator:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+        
+      - name: Restore Nuget packages
+        run: nuget restore
+        
+      - name: Build iOS project for iOS Simulator
+        run: |
+          cd AwesomeXamarinApp
+          cd AwesomeXamarinApp.iOS
+          msbuild AwesomeXamarinApp.iOS.csproj /verbosity:normal /t:Rebuild /p:Platform=iPhoneSimulator /p:Configuration=Debug
+
+      - name: Obtain iOS app file
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: iOS Simulator App
+          path: AwesomeXamarinApp/AwesomeXamarinApp.iOS/bin/iPhoneSimulator/Debug/AwesomeXamarinApp.iOS.app
