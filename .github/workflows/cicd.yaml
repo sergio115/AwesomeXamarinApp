@@ -9,19 +9,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.4.0
 
-    - name: Setup Android signing
+      - name: Setup Android signing
         run: |   
            echo "${{ secrets.KEYSTORE }}" > Curso_Xamarin.keystore.asc   
            gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch Curso_Xamarin.keystore.asc > ./AwesomeXamarinApp/AwesomeXamarinApp.Android/Curso_Xamarin.keystore.jks
 
       - name: Set Android version
         uses: damienaicheh/update-android-version-manifest-action@v1.0.0
-          with:
-            android-manifest-path: ./AwesomeXamarinApp/AwesomeXamarinApp.Android/Properties/AndroidManifest.xml
-            package-name: 'com.companyname.awesomexamarinapp'
-            version-name: ${{ secrets.APP_VERSION }}
-            version-code: ${{ github.run_number }}
-            print-file: true
+        with:
+          android-manifest-path: ./AwesomeXamarinApp/AwesomeXamarinApp.Android/Properties/AndroidManifest.xml
+          package-name: 'com.companyname.awesomexamarinapp'
+          version-name: ${{ secrets.APP_VERSION }}
+          version-code: ${{ github.run_number }}
+          print-file: true
       
       - name: Restore NuGet packages
         run: nuget restore
