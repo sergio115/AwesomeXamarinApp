@@ -11,8 +11,8 @@ jobs:
 
       - name: Setup Android signing
         run: |   
-           echo "${{ secrets.KEYSTORE }}" > Curso_Xamarin.keystore.asc   
-           gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch Curso_Xamarin.keystore.asc > ./AwesomeXamarinApp/AwesomeXamarinApp.Android/Curso_Xamarin.keystore
+           echo "${{ secrets.KEYSTORE }}" > CursoXamarinLive.keystore.asc   
+           gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch CursoXamarinLive.keystore.asc > ./AwesomeXamarinApp/AwesomeXamarinApp.Android/CursoXamarinLive.keystore
 
       - name: Set Android version
         uses: damienaicheh/update-android-version-manifest-action@v1.0.0
@@ -27,7 +27,7 @@ jobs:
         run: nuget restore
         
       - name: Build Android
-        run: MSBuild /t:SignAndroidPackage /p:Configuration=Release /p:AndroidPackageFormat=apk /p:AndroidKeyStore=true /p:AndroidSigningKeyAlias=curso xamarin /p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }} /p:AndroidSigningKeyStore=Curso_Xamarin.keystore /p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} ./AwesomeXamarinApp/AwesomeXamarinApp.Android/AwesomeXamarinApp.Android.csproj
+        run: MSBuild /t:SignAndroidPackage /p:Configuration=Release /p:AndroidPackageFormat=apk /p:AndroidKeyStore=true /p:AndroidSigningKeyAlias=cursoxamarinlive /p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }} /p:AndroidSigningKeyStore=CursoXamarinLive.keystore /p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} ./AwesomeXamarinApp/AwesomeXamarinApp.Android/AwesomeXamarinApp.Android.csproj
         
       - name: Obtain Android APK file
         uses: actions/upload-artifact@v2.2.4
