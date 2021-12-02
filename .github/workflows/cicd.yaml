@@ -12,7 +12,7 @@ jobs:
       - name: Setup Android signing
         run: |   
            echo "${{ secrets.KEYSTORE }}" > CursoXamarinLive.keystore.asc   
-           gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch CursoXamarinLive.keystore.asc > ./AwesomeXamarinApp/AwesomeXamarinApp.Android/CursoXamarinLive.keystore
+           gpg -d --passphrase "${{ secrets.GPG_PASSWORD  }}" --batch CursoXamarinLive.keystore.asc > ./AwesomeXamarinApp/AwesomeXamarinApp.Android/CursoXamarinLive.keystore
 
       - name: Set Android version
         uses: damienaicheh/update-android-version-manifest-action@v1.0.0
