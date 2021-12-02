@@ -1,0 +1,37 @@
+name: CICD
+
+on: push
+jobs:
+  build-Android:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+
+    - name: Setup Android signing
+        run: |   
+           echo "${{ secrets.KEYSTORE }}" > Curso_Xamarin.keystore.asc   
+           gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch Curso_Xamarin.keystore.asc > ./AwesomeXamarinApp/AwesomeXamarinApp.Android/Curso_Xamarin.keystore.jks
+
+      - name: Set Android version
+        uses: damienaicheh/update-android-version-manifest-action@v1.0.0
+          with:
+            android-manifest-path: ./AwesomeXamarinApp/AwesomeXamarinApp.Android/Properties/AndroidManifest.xml
+            package-name: 'com.companyname.awesomexamarinapp'
+            version-name: ${{ secrets.APP_VERSION }}
+            version-code: ${{ github.run_number }}
+            print-file: true
+      
+      - name: Restore NuGet packages
+        run: nuget restore
+        
+      - name: Build Android
+        run: MSBuild /t:SignAndroidPackage /p:Configuration=Release /p:AndroidPackageFormat=apk /p:AndroidKeyStore=true /p:AndroidSigningKeyAlias=Curso_Xamarin /p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }} /p:AndroidSigningKeyStore=urso_Xamarin.keystore.jks /p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} ./AwesomeXamarinApp/AwesomeXamarinApp.Android/AwesomeXamarinApp.Android.csproj
+        
+      - name: Obtain Android APK file
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Xamarin Awesome App
+          path: AwesomeXamarinApp/AwesomeXamarinApp.Android/bin/Release/com.companyname.awesomexamarinapp-Signed.apk
+          
